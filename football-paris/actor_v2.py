@@ -61,6 +61,29 @@ def get_action(a_prob, m_prob):
     return real_action, a, m, need_m, prob, prob_selected_a, prob_selected_m
 
 
+def get_action_policy_grad(a_prob, m_prob):
+    a = Categorical(a_prob).sample().item()
+    m, need_m = 0, 0
+    prob_selected_a = a_prob[0][0][a]
+    prob_selected_m = 0
+    if a == 0:
+        real_action = a
+        prob = prob_selected_a
+    elif a == 1:
+        m = Categorical(m_prob).sample().item()
+        need_m = 1
+        real_action = m + 1
+        prob_selected_m = m_prob[0][0][m]
+        prob = prob_selected_a * prob_selected_m
+    else:
+        real_action = a + 7
+        prob = prob_selected_a
+
+    assert prob != 0, 'prob 0 ERROR!!!! a : {}, m:{}  {}, {}'.format(a, m, prob_selected_a, prob_selected_m)
+
+    return real_action, a, m, need_m, prob, prob_selected_a, prob_selected_m
+
+
 def actor_policy_grad(epis, center_model, arg_dict):
     os.environ['OPENBLAS_NUM_THREADS'] = '1'
     fe_module = importlib.import_module("encoders." + arg_dict["encoder"])
@@ -99,7 +122,7 @@ def actor_policy_grad(epis, center_model, arg_dict):
         with torch.no_grad():
             a_prob, m_prob, _, h_out = model(state_dict_tensor)
         forward_t += time.time() - t1
-        real_action, a, m, need_m, prob, prob_selected_a, prob_selected_m = get_action(a_prob, m_prob)
+        real_action, a, m, need_m, prob, prob_selected_a, prob_selected_m = get_action_policy_grad(a_prob, m_prob)
 
         prev_obs = obs
         obs, rew, done, info = env.step(real_action)
