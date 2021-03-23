@@ -26,10 +26,13 @@ def update_policy(model, rollout, arg_dict):
     for log_prob, Gt in zip(prob, disc_r):
         policy_gradient.append(-log_prob * Gt)
     policy_gradient = torch.stack(policy_gradient).sum()
+    if policy_gradient.item() == 0:
+        return False
     model.optimizer.zero_grad()
     policy_gradient.backward()
     nn.utils.clip_grad_norm_(model.parameters(), arg_dict['grad_clip'])
     model.optimizer.step()
+    return True
 
 
 def policy_grad(model, arg_dict):
@@ -40,7 +43,9 @@ def policy_grad(model, arg_dict):
     last_steps = 0
     for n_epi in pbar:
         rollout, summary = actor_policy_grad(n_epi, model, arg_dict)
-        update_policy(model, rollout, arg_dict)
+        check = update_policy(model, rollout, arg_dict)
+        if not check:
+            print(f'Gradient at Episode {n_epi} is 0')
         (win, score, tot_reward, steps, _, _, _, _) = summary
         pbar.set_postfix(Episode=n_epi, Win=win, Score=score, Reward=tot_reward, Steps=steps)
         num_steps.append(steps)
