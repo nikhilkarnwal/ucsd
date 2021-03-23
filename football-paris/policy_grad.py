@@ -58,7 +58,6 @@ def policy_grad(model, arg_dict):
     plt.plot(num_steps)
     plt.plot(avg_num_steps)
     plt.xlabel('Episodes')
-    plt.show()
     plt.savefig(arg_dict['dir'] + '/policy_graph', dpi=200)
 
 
