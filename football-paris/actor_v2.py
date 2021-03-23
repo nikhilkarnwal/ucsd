@@ -142,11 +142,13 @@ def actor_policy_grad(epis, center_model, arg_dict):
 
         loop_t += time.time() - init_t
         pbar.set_postfix(Steps=steps, Score=score, Reward=tot_reward)
+        pbar.update(1)
         if done:
             if score > 0:
                 win = 1
             print("score", score, "total reward", tot_reward)
             summary_data = (win, score, tot_reward, steps, 0, loop_t / steps, forward_t / steps, wait_t / steps)
+    pbar.close()
     return rollout, summary_data
 
 

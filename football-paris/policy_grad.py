@@ -27,6 +27,7 @@ def update_policy(model, rollout, arg_dict):
         policy_gradient.append(-log_prob * Gt)
     policy_gradient = torch.stack(policy_gradient).sum()
     print(f'Grad Val {policy_gradient.item()}')
+    policy_gradient.requires_grad = True
     if policy_gradient.item() == 0:
         return False
     model.optimizer.zero_grad()
