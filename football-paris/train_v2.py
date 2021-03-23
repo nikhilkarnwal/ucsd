@@ -147,6 +147,6 @@ if __name__ == '__main__':
     arg_dict['dir'] = args.dir
     arg_dict['avg_steps'] = args.avg_steps
 
-    arg_dict['trained_model_path'] = arg_dict.checkpoint
+    arg_dict['trained_model_path'] = args.checkpoint
 
     main(arg_dict)
