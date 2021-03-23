@@ -85,7 +85,7 @@ def actor_policy_grad(epis, center_model, arg_dict):
 
     loop_t, forward_t, wait_t = 0.0, 0.0, 0.0
     obs = env.observation()
-    pbar = tqdm(desc=f'Running {epis} episode')
+    pbar = tqdm(desc=f'Running {epis} episode', total=3100)
     while not done:  # step loop
         init_t = time.time()
         wait_t += time.time() - init_t
