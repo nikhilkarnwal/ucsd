@@ -140,6 +140,8 @@ if __name__ == '__main__':
 
     if args.env == 'self':
         arg_dict['env'] = '11_vs_11_kaggle'
+    else:
+        arg_dict['env'] = args.env
 
     arg_dict['batch_size'] = args.bs
     arg_dict['n_epi'] = args.n_epi

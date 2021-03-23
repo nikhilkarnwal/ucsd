@@ -69,6 +69,7 @@ def policy_grad(model, arg_dict):
     plt.plot(avg_win_all, 'o', ls='-', c='orange', label='smooth value')
     plt.xlabel('Episodes')
     plt.ylabel('WinRate')
+    plt.legend()
     plt.savefig(arg_dict['dir'] + '/policy_win_rate', dpi=200)
 
     plt.figure(figsize=(7, 5), dpi=250)
@@ -76,6 +77,7 @@ def policy_grad(model, arg_dict):
     plt.plot(avg_all_reward, 'o', ls='-', c='orange', label='smooth value')
     plt.xlabel('Episodes')
     plt.ylabel('RewardRate')
+    plt.legend()
     plt.savefig(arg_dict['dir'] + '/policy_reward_rate', dpi=200)
 
     plt.figure(figsize=(7, 5), dpi=250)
@@ -83,6 +85,7 @@ def policy_grad(model, arg_dict):
     plt.plot(avg_score_all, 'o', ls='-', c='orange', label='smooth value')
     plt.xlabel('Episodes')
     plt.ylabel('ScoreRate')
+    plt.legend()
     plt.savefig(arg_dict['dir'] + '/policy_score_rate', dpi=200)
 
     metrics = [win_all, avg_win_all, all_reward, avg_all_reward, score_all, avg_score_all]
