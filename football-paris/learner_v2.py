@@ -119,29 +119,28 @@ def learner(center_model, queue, summary_queue, arg_dict):
 
     win_evaluation, score_evaluation = [], []
 
+    last_saved_step = save_model(model, arg_dict, optimization_step, last_saved_step)
+
+    data = get_data(queue, arg_dict, model)
+    loss, pi_loss, v_loss, entropy, move_entropy = algo.train(model, data)
+    optimization_step += arg_dict["batch_size"] * arg_dict["buffer_size"] * arg_dict["k_epoch"]
+    print("step :", optimization_step, "loss", loss, "data_q", queue.qsize(), "summary_q", summary_queue.qsize())
+
+    loss_lst.append(loss)
+    pi_loss_lst.append(pi_loss)
+    v_loss_lst.append(v_loss)
+    entropy_lst.append(entropy)
+    move_entropy_lst.append(move_entropy)
+    center_model.load_state_dict(model.state_dict())
+
     if queue.qsize() > arg_dict["batch_size"] * arg_dict["buffer_size"]:
-        last_saved_step = save_model(model, arg_dict, optimization_step, last_saved_step)
+        print("warning. data remaining. queue size : ", queue.qsize())
 
-        data = get_data(queue, arg_dict, model)
-        loss, pi_loss, v_loss, entropy, move_entropy = algo.train(model, data)
-        optimization_step += arg_dict["batch_size"] * arg_dict["buffer_size"] * arg_dict["k_epoch"]
-        print("step :", optimization_step, "loss", loss, "data_q", queue.qsize(), "summary_q", summary_queue.qsize())
-
-        loss_lst.append(loss)
-        pi_loss_lst.append(pi_loss)
-        v_loss_lst.append(v_loss)
-        entropy_lst.append(entropy)
-        move_entropy_lst.append(move_entropy)
-        center_model.load_state_dict(model.state_dict())
-
-        if queue.qsize() > arg_dict["batch_size"] * arg_dict["buffer_size"]:
-            print("warning. data remaining. queue size : ", queue.qsize())
-
-        if summary_queue.qsize() > arg_dict["summary_game_window"]:
-            win_evaluation, score_evaluation = write_summary(writer, arg_dict, summary_queue, n_game, loss_lst,
-                                                             pi_loss_lst,
-                                                             v_loss_lst, entropy_lst, move_entropy_lst,
-                                                             optimization_step,
-                                                             self_play_board, win_evaluation, score_evaluation)
-            loss_lst, pi_loss_lst, v_loss_lst, entropy_lst, move_entropy_lst = [], [], [], [], []
-            n_game += arg_dict["summary_game_window"]
+    if summary_queue.qsize() > arg_dict["summary_game_window"]:
+        win_evaluation, score_evaluation = write_summary(writer, arg_dict, summary_queue, n_game, loss_lst,
+                                                         pi_loss_lst,
+                                                         v_loss_lst, entropy_lst, move_entropy_lst,
+                                                         optimization_step,
+                                                         self_play_board, win_evaluation, score_evaluation)
+        loss_lst, pi_loss_lst, v_loss_lst, entropy_lst, move_entropy_lst = [], [], [], [], []
+        n_game += arg_dict["summary_game_window"]

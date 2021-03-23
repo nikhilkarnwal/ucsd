@@ -8,6 +8,7 @@ import torch.optim as optim
 from torch.distributions import Categorical
 import torch.multiprocessing as mp
 from tensorboardX import SummaryWriter
+from policy_grad import policy_grad
 
 from actor_v2 import *
 from learner import *
@@ -15,6 +16,19 @@ from evaluator import evaluator
 from datetime import datetime, timedelta
 
 import queue
+import argparse
+
+parser = argparse.ArgumentParser(description='Train an Agent for Football')
+
+parser.add_argument('--n_epi', help='Number of episodes', default=1, type=int)
+parser.add_argument('--env', help='self or ai', default='ai', type=str)
+parser.add_argument('--algo', help='ppo or policy', default='ppo', type=str)
+parser.add_argument('--checkpoint', help='path of checkpoint', default=None, type=str)
+parser.add_argument('--dir', help='output directory', default='.', type=str)
+parser.add_argument('--bs', help='Batch Size', default=200, type=int)
+parser.add_argument('--avg_steps', help='avg_steps Size for smoothing', default=5, type=int)
+
+args = parser.parse_args()
 
 
 def save_args(arg_dict):
@@ -76,9 +90,11 @@ def main(arg_dict):
     path = arg_dict["log_dir"] + f"/model_{optimization_step}.tar"
     torch.save(model_dict, path)
 
-    summary_queue = queue.Queue()
-
-    actor(1, center_model, summary_queue, arg_dict)
+    if arg_dict['algorithm'] == 'policy':
+        policy_grad(model, arg_dict)
+    else:
+        summary_queue = queue.Queue()
+        actor(1, center_model, summary_queue, arg_dict)
 
     print('Training done!')
 
@@ -115,9 +131,22 @@ if __name__ == '__main__':
         "model": "conv1d",
         "algorithm": "ppo",
         "n_epi": 1,
+        'dir': 'output',
+        'avg_steps': 5,
 
         "env_evaluation": '11_vs_11_hard_stochastic'
         # for evaluation of self-play trained agent (like validation set in Supervised Learning)
     }
+
+    if args.env == 'self':
+        arg_dict['env'] = '11_vs_11_kaggle'
+
+    arg_dict['batch_size'] = args.bs
+    arg_dict['n_epi'] = args.n_epi
+    arg_dict['algorithm'] = args.algo
+    arg_dict['dir'] = args.dir
+    arg_dict['avg_steps'] = args.avg_steps
+
+    arg_dict['trained_model_path'] = arg_dict.checkpoint
 
     main(arg_dict)
