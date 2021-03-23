@@ -13,7 +13,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from learner_v2 import learner
 import queue
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 
 def state_to_tensor(state_dict, h_in):
@@ -109,7 +109,7 @@ def actor_policy_grad(epis, center_model, arg_dict):
 
     loop_t, forward_t, wait_t = 0.0, 0.0, 0.0
     obs = env.observation()
-    pbar = tqdm(desc=f'Running {epis} episode', total=3100)
+    pbar = tqdm(desc=f'Running {epis} episode', total=3100, position=0, leave=True)
     while not done:  # step loop
         init_t = time.time()
         wait_t += time.time() - init_t

@@ -1,9 +1,10 @@
 from torch import nn
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 from actor_v2 import actor_policy_grad
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 
 
 def update_policy(model, rollout, arg_dict):
@@ -38,7 +39,7 @@ def update_policy(model, rollout, arg_dict):
 
 
 def policy_grad(model, arg_dict):
-    pbar = tqdm(range(arg_dict['n_epi']))
+    pbar = tqdm(range(arg_dict['n_epi']),position=0, leave=True)
     win_all = []
     avg_win_all = []
     all_reward = []
@@ -46,6 +47,7 @@ def policy_grad(model, arg_dict):
     score_all = []
     avg_score_all = []
     last_steps = 0
+    total_steps = 0
     for n_epi in pbar:
         rollout, summary = actor_policy_grad(n_epi, model, arg_dict)
         check = update_policy(model, rollout, arg_dict)
@@ -59,7 +61,8 @@ def policy_grad(model, arg_dict):
         avg_all_reward.append(np.mean(all_reward[-arg_dict['avg_steps']:]))
         score_all.append(score)
         avg_score_all.append(np.mean(score_all[-arg_dict['avg_steps']:]))
-        last_steps = save_model(model, arg_dict, np.sum(win_all), last_steps)
+        total_steps+=steps
+        last_steps = save_model(model, arg_dict, total_steps, last_steps)
 
     plt.plot(win_all)
     plt.plot(avg_win_all)
@@ -79,9 +82,10 @@ def policy_grad(model, arg_dict):
     plt.ylabel('ScoreRate')
     plt.savefig(arg_dict['dir'] + '/policy_score_rate', dpi=200)
 
-    metrics = np.array([win, win_all, all_reward, avg_all_reward, score_all, avg_score_all])
+    metrics = [win, win_all, all_reward, avg_all_reward, score_all, avg_score_all]
 
-    metrics.savetxt(arg_dict['dir'+'/metrics.txt'])
+    with open(arg_dict['dir'+'/metrics.json','w']) as file_ptr:
+        json.dump(metrics,file_ptr)
 
 
 def save_model(model, arg_dict, optimization_step, last_saved_step):
