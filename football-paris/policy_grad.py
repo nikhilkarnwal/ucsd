@@ -64,25 +64,28 @@ def policy_grad(model, arg_dict):
         total_steps += steps
         last_steps = save_model(model, arg_dict, total_steps, last_steps)
 
-    plt.plot(win_all)
-    plt.plot(avg_win_all)
+    plt.figure(figsize=(7, 5), dpi=250)
+    plt.plot(win_all, '^', c='b', label='raw value')
+    plt.plot(avg_win_all, 'o', c='orange', label='smooth value')
     plt.xlabel('Episodes')
     plt.ylabel('WinRate')
     plt.savefig(arg_dict['dir'] + '/policy_win_rate', dpi=200)
 
-    plt.plot(all_reward)
-    plt.plot(avg_all_reward)
+    plt.figure(figsize=(7, 5), dpi=250)
+    plt.plot(all_reward, '^', c='b', label='raw value')
+    plt.plot(avg_all_reward, 'o', c='orange', label='smooth value')
     plt.xlabel('Episodes')
     plt.ylabel('RewardRate')
     plt.savefig(arg_dict['dir'] + '/policy_reward_rate', dpi=200)
 
-    plt.plot(score_all)
-    plt.plot(avg_score_all)
+    plt.figure(figsize=(7, 5), dpi=250)
+    plt.plot(score_all, '^', c='b', label='raw value')
+    plt.plot(avg_score_all, 'o', c='orange', label='smooth value')
     plt.xlabel('Episodes')
     plt.ylabel('ScoreRate')
     plt.savefig(arg_dict['dir'] + '/policy_score_rate', dpi=200)
 
-    metrics = [win, win_all, all_reward, avg_all_reward, score_all, avg_score_all]
+    metrics = [win_all, avg_win_all, all_reward, avg_all_reward, score_all, avg_score_all]
 
     with open(arg_dict['dir'] + '/metrics.json', 'w') as file_ptr:
         json.dump(metrics, file_ptr)
