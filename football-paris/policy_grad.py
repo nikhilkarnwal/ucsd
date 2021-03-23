@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def update_policy(model, rollout, arg_dict):
+    rollout = np.array(rollout)
     fin_r, prob = rollout[:, 0], rollout[:, 1]
     disc_r = []
     GAMMA = arg_dict['gamma']
