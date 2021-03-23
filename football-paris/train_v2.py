@@ -91,7 +91,7 @@ def main(arg_dict):
     torch.save(model_dict, path)
 
     if arg_dict['algorithm'] == 'policy':
-        policy_grad(model, arg_dict)
+        policy_grad(center_model, arg_dict)
     else:
         summary_queue = queue.Queue()
         actor(1, center_model, summary_queue, arg_dict)
