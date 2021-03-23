@@ -89,7 +89,7 @@ def policy_grad(model, arg_dict):
 
 
 def save_model(model, arg_dict, optimization_step, last_saved_step):
-    if optimization_step >= last_saved_step + arg_dict["model_save_interval"]:
+    if optimization_step >= last_saved_step:
         model_dict = {
             'optimization_step': optimization_step,
             'model_state_dict': model.state_dict(),
