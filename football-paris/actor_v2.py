@@ -13,7 +13,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from learner_v2 import learner
 import queue
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 
 def state_to_tensor(state_dict, h_in):

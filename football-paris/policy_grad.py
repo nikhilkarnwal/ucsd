@@ -1,5 +1,5 @@
 from torch import nn
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 from actor_v2 import actor_policy_grad
 import torch
 import numpy as np
@@ -39,9 +39,12 @@ def update_policy(model, rollout, arg_dict):
 
 def policy_grad(model, arg_dict):
     pbar = tqdm(range(arg_dict['n_epi']))
-    num_steps = []
-    avg_num_steps = []
+    win_all = []
+    avg_win_all = []
     all_reward = []
+    avg_all_reward = []
+    score_all = []
+    avg_score_all = []
     last_steps = 0
     for n_epi in pbar:
         rollout, summary = actor_policy_grad(n_epi, model, arg_dict)
@@ -50,15 +53,31 @@ def policy_grad(model, arg_dict):
             print(f'Gradient at Episode {n_epi} is 0')
         (win, score, tot_reward, steps, _, _, _, _) = summary
         pbar.set_postfix(Episode=n_epi, Win=win, Score=score, Reward=tot_reward, Steps=steps)
-        num_steps.append(steps)
-        avg_num_steps.append(np.mean(num_steps[-arg_dict['avg_steps']:]))
+        win_all.append(win)
+        avg_win_all.append(np.mean(win_all[-arg_dict['avg_steps']:]))
         all_reward.append(tot_reward)
-        last_steps = save_model(model, arg_dict, np.sum(num_steps), last_steps)
+        avg_all_reward.append(np.mean(all_reward[-arg_dict['avg_steps']:]))
+        score_all.append(score)
+        avg_score_all.append(np.mean(score_all[-arg_dict['avg_steps']:]))
+        last_steps = save_model(model, arg_dict, np.sum(win_all), last_steps)
 
-    plt.plot(num_steps)
-    plt.plot(avg_num_steps)
+    plt.plot(win_all)
+    plt.plot(avg_win_all)
     plt.xlabel('Episodes')
-    plt.savefig(arg_dict['dir'] + '/policy_graph', dpi=200)
+    plt.ylabel('WinRate')
+    plt.savefig(arg_dict['dir'] + '/policy_win_rate', dpi=200)
+
+    plt.plot(all_reward)
+    plt.plot(avg_all_reward)
+    plt.xlabel('Episodes')
+    plt.ylabel('RewardRate')
+    plt.savefig(arg_dict['dir'] + '/policy_reward_rate', dpi=200)
+
+    plt.plot(score_all)
+    plt.plot(avg_score_all)
+    plt.xlabel('Episodes')
+    plt.ylabel('ScoreRate')
+    plt.savefig(arg_dict['dir'] + '/policy_score_rate', dpi=200)
 
 
 def save_model(model, arg_dict, optimization_step, last_saved_step):
