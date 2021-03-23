@@ -127,7 +127,7 @@ if __name__ == '__main__':
         "print_mode": False,
 
         "encoder": "encoder_basic",
-        "rewarder": "rewarder_basic",
+        "rewarder": "rewarder_v2",
         "model": "conv1d",
         "algorithm": "ppo",
         "n_epi": 1,
