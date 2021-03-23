@@ -79,6 +79,10 @@ def policy_grad(model, arg_dict):
     plt.ylabel('ScoreRate')
     plt.savefig(arg_dict['dir'] + '/policy_score_rate', dpi=200)
 
+    metrics = np.array([win, win_all, all_reward, avg_all_reward, score_all, avg_score_all])
+
+    metrics.savetxt(arg_dict['dir'+'/metrics.txt'])
+
 
 def save_model(model, arg_dict, optimization_step, last_saved_step):
     if optimization_step >= last_saved_step + arg_dict["model_save_interval"]:
