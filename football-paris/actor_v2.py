@@ -12,6 +12,7 @@ import numpy as np
 
 from datetime import datetime, timedelta
 from learner_v2 import learner
+import queue
 
 
 def state_to_tensor(state_dict, h_in):
@@ -75,6 +76,7 @@ def actor(actor_num, center_model, summary_queue, arg_dict):
                                           write_goal_dumps=False, write_full_episode_dumps=False, render=False)
     n_epi = 0
     rollout = []
+    data_queue = queue.Queue()
     while True:  # episode loop
         env.reset()
         done = False
@@ -112,8 +114,8 @@ def actor(actor_num, center_model, summary_queue, arg_dict):
             transition = (state_dict, a, m, fin_r, state_prime_dict, prob, done, need_m)
             rollout.append(transition)
             if len(rollout) == arg_dict["rollout_len"]:
-                learner(center_model, rollout, summary_queue, arg_dict)
-                # data_queue.put(rollout)
+                data_queue.put(rollout)
+                learner(center_model, data_queue, summary_queue, arg_dict)
                 rollout = []
                 model.load_state_dict(center_model.state_dict())
 
@@ -177,7 +179,7 @@ def actor_self(actor_num, center_model, data_queue, signal_queue, summary_queue,
 
     n_epi = 0
     rollout = []
-    while True:  # episode loop
+    while n_epi < arg_dict['n_epi']:  # episode loop
         opp_model_num, opp_model_path = select_opponent(arg_dict)
         checkpoint = torch.load(opp_model_path, map_location=cpu_device)
         opp_model.load_state_dict(checkpoint['model_state_dict'])
