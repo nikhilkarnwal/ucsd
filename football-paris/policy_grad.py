@@ -39,7 +39,7 @@ def update_policy(model, rollout, arg_dict):
 
 
 def policy_grad(model, arg_dict):
-    pbar = tqdm(range(arg_dict['n_epi']),position=0, leave=True)
+    pbar = tqdm(range(arg_dict['n_epi']), position=0, leave=True)
     win_all = []
     avg_win_all = []
     all_reward = []
@@ -61,7 +61,7 @@ def policy_grad(model, arg_dict):
         avg_all_reward.append(np.mean(all_reward[-arg_dict['avg_steps']:]))
         score_all.append(score)
         avg_score_all.append(np.mean(score_all[-arg_dict['avg_steps']:]))
-        total_steps+=steps
+        total_steps += steps
         last_steps = save_model(model, arg_dict, total_steps, last_steps)
 
     plt.plot(win_all)
@@ -84,8 +84,8 @@ def policy_grad(model, arg_dict):
 
     metrics = [win, win_all, all_reward, avg_all_reward, score_all, avg_score_all]
 
-    with open(arg_dict['dir'+'/metrics.json','w']) as file_ptr:
-        json.dump(metrics,file_ptr)
+    with open(arg_dict['dir'] + '/metrics.json', 'w') as file_ptr:
+        json.dump(metrics, file_ptr)
 
 
 def save_model(model, arg_dict, optimization_step, last_saved_step):
