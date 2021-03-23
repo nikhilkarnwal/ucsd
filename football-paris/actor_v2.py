@@ -68,8 +68,9 @@ def actor_policy_grad(epis, center_model, arg_dict):
     imported_model = importlib.import_module("models." + arg_dict["model"])
 
     fe = fe_module.FeatureEncoder()
-    model = imported_model.Model(arg_dict)
-    model.load_state_dict(center_model.state_dict())
+    model = center_model
+    # model = imported_model.Model(arg_dict)
+    # model.load_state_dict(center_model.state_dict())
 
     env = football_env.create_environment(env_name=arg_dict["env"], representation="raw", stacked=False,
                                           logdir='/tmp/football', \
