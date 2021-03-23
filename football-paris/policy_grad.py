@@ -38,7 +38,7 @@ def policy_grad(model, arg_dict):
     all_reward = []
     last_steps = 0
     for n_epi in pbar:
-        rollout, summary = actor_policy_grad(model, arg_dict)
+        rollout, summary = actor_policy_grad(n_epi, model, arg_dict)
         update_policy(model, rollout, arg_dict)
         (win, score, tot_reward, steps, _, _, _, _) = summary
         pbar.set_postfix(Episode=n_epi, Win=win, Score=score, Reward=tot_reward, Steps=steps)
