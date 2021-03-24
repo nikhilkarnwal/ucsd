@@ -25,6 +25,7 @@ parser.add_argument('--env', help='self or ai', default='ai', type=str)
 parser.add_argument('--algo', help='ppo or policy', default='ppo', type=str)
 parser.add_argument('--checkpoint', help='path of checkpoint', default=None, type=str)
 parser.add_argument('--dir', help='output directory', default='.', type=str)
+parser.add_argument('--device', help='cuda or cpu', default='cuda', type=str)
 parser.add_argument('--bs', help='Batch Size', default=200, type=int)
 parser.add_argument('--avg_steps', help='avg_steps Size for smoothing', default=5, type=int)
 
@@ -69,7 +70,7 @@ def main(arg_dict):
 
     model = importlib.import_module("models." + arg_dict["model"])
     cpu_device = torch.device('cpu')
-    center_model = model.Model(arg_dict)
+    center_model = model.Model(arg_dict, arg_dict['device'])
 
     if arg_dict["trained_model_path"]:
         checkpoint = torch.load(arg_dict["trained_model_path"], map_location=cpu_device)
@@ -81,6 +82,7 @@ def main(arg_dict):
     else:
         optimization_step = 0
 
+
     model_dict = {
         'optimization_step': optimization_step,
         'model_state_dict': center_model.state_dict(),
@@ -89,6 +91,8 @@ def main(arg_dict):
 
     path = arg_dict["log_dir"] + f"/model_{optimization_step}.tar"
     torch.save(model_dict, path)
+
+    center_model = center_model.cuda(arg_dict['device'])
 
     if arg_dict['algorithm'] == 'policy':
         policy_grad(center_model, arg_dict)
@@ -150,5 +154,7 @@ if __name__ == '__main__':
     arg_dict['avg_steps'] = args.avg_steps
 
     arg_dict['trained_model_path'] = args.checkpoint
+
+    arg_dict['device']=args.device
 
     main(arg_dict)

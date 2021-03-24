@@ -55,13 +55,13 @@ class Model(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=arg_dict["learning_rate"])
         
     def forward(self, state_dict):
-        player_state = state_dict["player"]          
-        ball_state = state_dict["ball"]              
-        left_team_state = state_dict["left_team"]
-        left_closest_state = state_dict["left_closest"]
-        right_team_state = state_dict["right_team"]  
-        right_closest_state = state_dict["right_closest"]
-        avail = state_dict["avail"]
+        player_state = state_dict["player"].to(self.device)
+        ball_state = state_dict["ball"].to(self.device)
+        left_team_state = state_dict["left_team"].to(self.device)
+        left_closest_state = state_dict["left_closest"].to(self.device)
+        right_team_state = state_dict["right_team"].to(self.device)
+        right_closest_state = state_dict["right_closest"].to(self.device)
+        avail = state_dict["avail"].to(self.device)
         
         player_embed = self.norm_player(self.fc_player(player_state))
         ball_embed = self.norm_ball(self.fc_ball(ball_state))
@@ -208,4 +208,3 @@ class Model(nn.Module):
                                          torch.tensor(need_move_batch, dtype=torch.float, device=self.device).permute(1,0,2)
 
         return s, a, m, r, s_prime, done_mask, prob, need_move
-    
