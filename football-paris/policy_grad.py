@@ -9,7 +9,7 @@ import json
 
 def update_policy(model, rollout, arg_dict):
     rollout = np.array(rollout)
-    fin_r, prob = rollout[:, 0], rollout[:, 1]
+    fin_r, prob = rollout[:, 0], np.log(rollout[:, 1])
     disc_r = []
     GAMMA = arg_dict['gamma']
     for t in range(len(fin_r)):
@@ -31,6 +31,7 @@ def update_policy(model, rollout, arg_dict):
     policy_gradient.requires_grad = True
     if policy_gradient.item() == 0:
         return False
+    model.train()
     model.optimizer.zero_grad()
     policy_gradient.backward()
     nn.utils.clip_grad_norm_(model.parameters(), arg_dict['grad_clip'])
