@@ -92,7 +92,7 @@ def main(arg_dict):
     path = arg_dict["log_dir"] + f"/model_{optimization_step}.tar"
     torch.save(model_dict, path)
 
-    center_model = center_model.cuda(arg_dict['device'])
+    center_model.cuda()
 
     if arg_dict['algorithm'] == 'policy':
         policy_grad(center_model, arg_dict)
