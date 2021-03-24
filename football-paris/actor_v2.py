@@ -131,8 +131,8 @@ def actor_policy_grad(epis, center_model, arg_dict):
 
         (h1_in, h2_in) = h_in
         (h1_out, h2_out) = h_out
-        state_dict["hidden"] = (h1_in.numpy(), h2_in.numpy())
-        state_prime_dict["hidden"] = (h1_out.numpy(), h2_out.numpy())
+        state_dict["hidden"] = (h1_in.cpu().numpy(), h2_in.cpu().numpy())
+        state_prime_dict["hidden"] = (h1_out.cpu().numpy(), h2_out.cpu().numpy())
         transition = [fin_r, prob]
         rollout.append(transition)
 
