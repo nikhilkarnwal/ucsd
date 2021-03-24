@@ -83,7 +83,7 @@ class Model(nn.Module):
         
         cat = torch.cat([player_embed, ball_embed, left_team_embed, right_team_embed, left_closest_embed, right_closest_embed], 2)
         cat = F.relu(self.norm_cat(self.fc_cat(cat)))
-        h_in = state_dict["hidden"]
+        h_in = state_dict["hidden"].to(self.device)
         out, h_out = self.lstm(cat, h_in)
         
         a_out = F.relu(self.norm_pi_a1(self.fc_pi_a1(out)))
