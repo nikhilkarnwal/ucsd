@@ -101,7 +101,7 @@ def save_model(model, arg_dict, optimization_step, last_saved_step):
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': model.optimizer.state_dict(),
         }
-        path = arg_dict["dir"] + "/model_" + str(optimization_step) + ".tar"
+        path = arg_dict["dir"] + "/model" + ".tar"
         torch.save(model_dict, path)
         print("Model saved :", path)
         return optimization_step
